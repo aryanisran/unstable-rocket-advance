@@ -1,5 +1,5 @@
 /.vscode
 /build
-/gbajam.elf
-/gbajam.gba
-/gbajam.sav
+*.elf
+*.gba
+*.sav
