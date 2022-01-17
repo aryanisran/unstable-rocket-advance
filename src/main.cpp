@@ -14,10 +14,9 @@
 int main()
 {
     bn::core::init();
-    int enemyY;
+    const int offScreenX = 200;
+    int activePair = 0;
     bn::random rng;
-    enemyY = rng.get_int(1, 4);;
-    enemyY = toolbox::map_int_to_range(enemyY, 1, 3, -50, 50);
     bn::fixed_point rocketVelocity;
     int randomRocketDirection = rng.get_int();
     if(randomRocketDirection != 0)
@@ -25,7 +24,12 @@ int main()
         randomRocketDirection = randomRocketDirection / bn::abs(randomRocketDirection);
     }
     bn::sprite_ptr rocket = bn::sprite_items::rocket.create_sprite(-90, 0);
-    bn::sprite_ptr enemy = bn::sprite_items::enemy.create_sprite(128, enemyY);
+    bn::sprite_ptr enemies[3][2] = {
+        {bn::sprite_items::enemy.create_sprite(offScreenX, 0), bn::sprite_items::enemy.create_sprite(offScreenX, 0)},
+        {bn::sprite_items::enemy.create_sprite(offScreenX, 0), bn::sprite_items::enemy.create_sprite(offScreenX, 0)},
+        {bn::sprite_items::enemy.create_sprite(offScreenX, 0), bn::sprite_items::enemy.create_sprite(offScreenX, 0)}
+    };
+    ur::game::set_wave_y(enemies[activePair], rng);
     while(true)
     {
         if(bn::keypad::up_held())
@@ -41,8 +45,26 @@ int main()
             rocketVelocity.set_y(randomRocketDirection);
         }
         rocket.set_position(rocket.position() + rocketVelocity);
-        enemy.set_x(enemy.x() - 1);
-        rocket.set_visible(!ur::game::checkCollision(rocket, enemy));
+        ur::game::move_wave_to_player(enemies[activePair]);
+        bool collided = false;
+        for (int i = 0; i < 2; i++)
+        {
+            if(ur::game::check_collision(rocket, enemies[activePair][i])) {
+                collided = true;
+            }
+        }
+        rocket.set_visible(!collided);
+        if(enemies[activePair][0].x() + enemies[activePair][0].shape_size().width() <= rocket.x()) {
+            ur::game::reset_wave(enemies[activePair]);
+            if(activePair >= 2) {
+                activePair = 0;
+            }
+            else {
+                activePair++;
+            }
+            ur::game::set_wave_y(enemies[activePair], rng);
+        }
         bn::core::update();
     }
 }
+
