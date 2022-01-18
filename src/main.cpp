@@ -14,6 +14,7 @@
 #include "bn_timers.h"
 #include "bn_log.h"
 
+bn::random rng;
 namespace 
 {
     void title() {
@@ -26,7 +27,6 @@ namespace
         //TODO:show score somewhere
         const int offScreenX = 200;
         int activePair = 0;
-        bn::random rng = bn::random();
         bn::fixed_point rocketVelocity;
         int randomRocketDirection = rng.get_int(-1, 1);
         int changeDirectionTiming = rng.get_int(4, 10) * bn::timers::ticks_per_frame() * 60;
