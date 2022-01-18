@@ -12,12 +12,13 @@
 #include "ur_game.h"
 #include "bn_timer.h"
 #include "bn_timers.h"
+#include "bn_log.h"
 
 namespace 
 {
     void title() {
         //TODO: show title, show press start to start game
-        while(!bn::keypad::start_pressed) {
+        while(!bn::keypad::start_pressed()) {
             
         }
     }
@@ -25,13 +26,12 @@ namespace
         //TODO:show score somewhere
         const int offScreenX = 200;
         int activePair = 0;
-        bn::random rng;
+        bn::random rng = bn::random();
         bn::fixed_point rocketVelocity;
-        int randomRocketDirection = rng.get_int();
-        if(randomRocketDirection != 0)
-        {
-            randomRocketDirection = randomRocketDirection / bn::abs(randomRocketDirection);
-        }
+        int randomRocketDirection = rng.get_int(-1, 1);
+        int changeDirectionTiming = rng.get_int(4, 10) * bn::timers::ticks_per_frame() * 60;
+        BN_LOG("timing: ", changeDirectionTiming);
+        bn::timer timer = bn::timer();
         bn::sprite_ptr rocket = bn::sprite_items::rocket.create_sprite(-90, 0);
         bn::sprite_ptr enemies[3][2] = {
             {bn::sprite_items::enemy.create_sprite(offScreenX, 0), bn::sprite_items::enemy.create_sprite(offScreenX, 0)},
@@ -42,6 +42,12 @@ namespace
         bool collided = false;
         while(!collided)
         {
+            if(timer.elapsed_ticks() >= changeDirectionTiming) {
+                changeDirectionTiming = rng.get_int(4, 10)  * bn::timers::ticks_per_frame() * 60;
+                randomRocketDirection = rng.get_int(-1, 1);
+                timer.restart();
+
+            }
             if(bn::keypad::up_held())
             {
                 rocketVelocity.set_y(randomRocketDirection - 2);
