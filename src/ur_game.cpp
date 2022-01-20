@@ -11,15 +11,21 @@
 #include "bn_math.h"
 #include "toolbox.h"
 #include "ur_game.h"
+#include "ur_title.h"
 #include "bn_timer.h"
 #include "bn_timers.h"
 #include "bn_log.h"
-#
-
+#include "bn_regular_bg_position_hbe_ptr.h"
+#include "bn_regular_bg_attributes_hbe_ptr.h"
+#include "bn_sprite_text_generator.h"
+#include "bn_display.h"
+#include <bn_string.h>
 
 namespace ur
 {
     bn::random rng;
+    constexpr bn::fixed text_y_inc = 14;
+    constexpr bn::fixed text_y_limit = (bn::display::height() / 2) - text_y_inc;
 
     bool check_collision(bn::sprite_ptr sprite1, bn::sprite_ptr sprite2)
     {
@@ -80,7 +86,7 @@ namespace ur
         }
     }
 
-    void game() {
+    int game(bn::regular_bg_ptr bg, bn::sprite_text_generator text_generator) {
             //TODO:show score somewhere
             int activePair = 0;
             bn::fixed_point rocketVelocity;
@@ -98,6 +104,8 @@ namespace ur
             alert.set_visible(false);
             set_wave_y(enemies[activePair]);
             bool collided = false;
+            int framesElapsed = 0;
+            int score = 0;
             while(!collided)
             {
                 if(timer.elapsed_ticks() >= changeDirectionTiming - bn::timers::ticks_per_frame() * 60) {
@@ -142,7 +150,16 @@ namespace ur
                     set_wave_y(enemies[activePair]);
                 }
                 alert.set_position(rocket.position() + alertOffset);
+                bg.set_x(bg.x() - 1);
+                framesElapsed++;
+                if(framesElapsed > 60) {
+                    score++;
+                    framesElapsed = 0;
+                }
+                bn::vector<bn::sprite_ptr, 32> text_sprites;
+                text_generator.generate(0, -text_y_limit, bn::to_string<32>(score), text_sprites);
                 bn::core::update();
             }
+            return score;
     }
 }

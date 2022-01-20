@@ -12,6 +12,8 @@
 #include "bn_log.h"
 #include "bn_display.h"
 #include "bn_sprite_text_generator.h"
+#include "bn_regular_bg_position_hbe_ptr.h"
+#include "bn_regular_bg_attributes_hbe_ptr.h"
 
 namespace ur {
     constexpr bn::fixed text_y_inc = 14;
