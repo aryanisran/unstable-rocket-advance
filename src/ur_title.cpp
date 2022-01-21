@@ -24,8 +24,7 @@ namespace ur {
         text_generator.set_center_alignment();
         bn::vector<bn::sprite_ptr, 32> text_sprites;
         text_generator.generate(x, text_y_limit, "Press START to play", text_sprites);
-        bn::vector<bn::sprite_ptr, 32> char_sprites;
-        text_generator.generate(x, text_y_limit - text_y_inc, "Made by Aryan", char_sprites);
+        text_generator.generate(x, text_y_limit - text_y_inc, "Made by Aryan", text_sprites);
         while(!bn::keypad::start_pressed()) {
             bn::core::update();
         }

@@ -138,6 +138,9 @@ namespace ur
                         collided = true;
                     }
                 }
+                if(rocket.y() > 75 || rocket.y() < -75) {
+                    collided = true;
+                }
                 rocket.set_visible(!collided);
                 if(enemies[activePair][0].x() + enemies[activePair][0].shape_size().width() <= rocket.x()) {
                     reset_wave(enemies[activePair]);
