@@ -104,7 +104,6 @@ namespace ur
             alert.set_visible(false);
             set_wave_y(enemies[activePair]);
             bool collided = false;
-            int framesElapsed = 0;
             int score = 0;
             while(!collided)
             {
@@ -142,7 +141,7 @@ namespace ur
                     collided = true;
                 }
                 rocket.set_visible(!collided);
-                if(enemies[activePair][0].x() + enemies[activePair][0].shape_size().width() <= rocket.x()) {
+                if(enemies[activePair][0].x() + 2 * enemies[activePair][0].shape_size().width() <= rocket.x()) {
                     reset_wave(enemies[activePair]);
                     if(activePair >= 2) {
                         activePair = 0;
@@ -150,15 +149,11 @@ namespace ur
                     else {
                         activePair++;
                     }
+                    score++;
                     set_wave_y(enemies[activePair]);
                 }
                 alert.set_position(rocket.position() + alertOffset);
                 bg.set_x(bg.x() - 1);
-                framesElapsed++;
-                if(framesElapsed > 60) {
-                    score++;
-                    framesElapsed = 0;
-                }
                 bn::vector<bn::sprite_ptr, 32> text_sprites;
                 text_generator.generate(0, -text_y_limit, bn::to_string<32>(score), text_sprites);
                 bn::core::update();
